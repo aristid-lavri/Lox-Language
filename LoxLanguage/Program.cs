@@ -1,4 +1,5 @@
 ﻿using LoxLanguage.Lox.Core;
+using LoxLanguage.Lox.Interpreter;
 using LoxLanguage.Lox.Parser;
 using LoxLanguage.Lox.Scanner;
 using LoxLanguage.Lox.Seciruty;
@@ -10,6 +11,8 @@ namespace LoxLanguage
 {
     class Program
     {
+        private static Interpreter interpreter = new Interpreter();
+
         static void Main(string[] args)
         {
             if (args.Length == 1)
@@ -39,6 +42,7 @@ namespace LoxLanguage
             Run(fileContent);
 
             if (Error.hadError) return;
+            if (Error.hadRuntimeError) return;
         }
 
         private static void RunPrompt()
@@ -65,8 +69,9 @@ namespace LoxLanguage
 
             // Stop if there was a syntax error.                   
             if (Error.hadError) return;
-
-            Console.WriteLine(new AstPrinter().Print(expression));
+            
+            interpreter.Interpret(expression);
+            //Console.WriteLine(new AstPrinter().Print(expression));
         }
     }
 }

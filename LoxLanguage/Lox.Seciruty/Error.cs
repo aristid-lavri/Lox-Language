@@ -1,4 +1,5 @@
 ﻿using LoxLanguage.Lox.Core;
+using LoxLanguage.Lox.Interpreter;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,7 @@ namespace LoxLanguage.Lox.Seciruty
     public static class Error
     {
         public static bool hadError = false;
+        public static bool hadRuntimeError = false;
 
         internal static void Emit(Token token, string message)
         {
@@ -31,6 +33,13 @@ namespace LoxLanguage.Lox.Seciruty
         {
             Console.WriteLine($"[line {line} ] Error {where} : {message}");
             hadError = true;
+        }
+
+        internal static void RuntimeError(LoxRunTimeError error)
+        {
+            Console.WriteLine(error.Message+
+                "\n[line " + error._token._line + "]");
+            hadRuntimeError = true;
         }
     }
 }
