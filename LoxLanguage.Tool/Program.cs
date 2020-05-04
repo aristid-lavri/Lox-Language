@@ -13,7 +13,14 @@ namespace LoxLanguage.Tool
               "Binary   : Expr left, Token loxOperator, Expr right",
               "Grouping : Expr expression",
               "Literal  : Object value",
-              "Unary    : Token loxOperator, Expr right"
+              "Unary    : Token loxOperator, Expr right",
+              "Variable : Token name"
+            });
+
+            DefineAst(_path, "Stmt", new List<string> {
+              "Expression : Expr expression",
+              "Print      : Expr expression",
+              "Var        : Token name, Expr initializer"
             });
         }
 
@@ -92,7 +99,7 @@ namespace LoxLanguage.Tool
             writer.WriteLine();
             foreach (string field in fieldArrays)
             {
-                writer.WriteLine($"    private {field} ;");
+                writer.WriteLine($"    internal {field} ;");
             }
 
             writer.WriteLine("  }");

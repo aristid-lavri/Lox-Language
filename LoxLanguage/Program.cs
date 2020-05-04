@@ -15,10 +15,11 @@ namespace LoxLanguage
 
         static void Main(string[] args)
         {
-            if (args.Length == 1)
-                RunFile(args[0]);
-            else
-                RunPrompt();
+            //if (args.Length == 1)
+            //    RunFile(args[0]);
+            //else
+            //    RunPrompt();
+            RunFile(@"E:\Personal\Projects\Learning\LoxLanguage\LoxLanguage\Language.Files\Statements.lox");
         }
 
         //static void Main(string[] args)
@@ -65,12 +66,12 @@ namespace LoxLanguage
             List<Token> tokens = scranner.ScanTokens();
 
             Parser parser = new Parser(tokens);
-            Expr expression = parser.Parse();
+            List<Stmt> statements = parser.Parse();
 
             // Stop if there was a syntax error.                   
             if (Error.hadError) return;
             
-            interpreter.Interpret(expression);
+            interpreter.Interpret(statements);
             //Console.WriteLine(new AstPrinter().Print(expression));
         }
     }

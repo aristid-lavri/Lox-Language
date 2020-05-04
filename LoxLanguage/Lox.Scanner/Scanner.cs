@@ -168,7 +168,7 @@ namespace LoxLanguage.Lox.Scanner
             Advance();
 
             // Trim the surrounding quotes.                         
-            string value = _source.Substring(_start + 1, (((_current - 1) - (_start + 1)) + 1));
+            string value = _source.Substring(_start + 1, (((_current - 1) - (_start + 1))));
             AddToken(TokenKind.Kind.STRING, value);
         }
 

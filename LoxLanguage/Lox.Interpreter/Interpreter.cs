@@ -7,7 +7,7 @@ using static LoxLanguage.Lox.Core.TokenKind;
 
 namespace LoxLanguage.Lox.Interpreter
 {
-    class Interpreter : Expr.Visitor<object>
+    class Interpreter : Expr.Visitor<Object>, Stmt.Visitor<object>
     {
         object Expr.Visitor<object>.VisitBinaryExpr(Expr.Binary expr)
         {
@@ -120,17 +120,24 @@ namespace LoxLanguage.Lox.Interpreter
             return expr.Accept(this);
         }
 
-        internal void Interpret(Expr expression)
+        internal void Interpret(List<Stmt> statements)
         {
             try
             {
-                object value = Evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach(Stmt statement in statements)
+                {
+                    Execute(statement);
+                }
             }
-            catch (LoxRunTimeError error)
+            catch(LoxRunTimeError error)
             {
                 Lox.Seciruty.Error.RuntimeError(error);
             }
+        }
+
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
         }
 
         private string Stringify(object obj)
@@ -148,6 +155,29 @@ namespace LoxLanguage.Lox.Interpreter
             }
 
             return obj.ToString();
+        }
+
+        object Stmt.Visitor<object>.VisitExpressionStmt(Stmt.Expression stmt)
+        {
+            Evaluate(stmt.expression);
+            return null;
+        }
+
+        object Stmt.Visitor<object>.VisitPrintStmt(Stmt.Print stmt)
+        {
+            Object value = Evaluate(stmt.expression);
+            Console.WriteLine(Stringify(value));
+            return null;
+        }
+
+        object Stmt.Visitor<object>.VisitVarStmt(Stmt.Var stmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        object Expr.Visitor<object>.VisitVariableExpr(Expr.Variable expr)
+        {
+            throw new NotImplementedException();
         }
     }
 }

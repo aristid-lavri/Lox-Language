@@ -19,16 +19,77 @@ namespace LoxLanguage.Lox.Parser
             _tokens = tokens;
         }
 
-        internal Expr Parse()
+        //internal Expr Parse()
+        //{
+        //    try
+        //    {
+        //        return Expression();
+        //    }
+        //    catch (ParseError error)
+        //    {
+        //        return null;
+        //    }
+        //}
+
+        internal List<Stmt> Parse()
+        {
+            List<Stmt> statements = new List<Stmt>();
+            while (!IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            return statements;
+        }
+
+        private Stmt Declaration()
         {
             try
             {
-                return Expression();
+                if (Match(Kind.VAR)) return VarDeclaration();
+
+                return Statement();
             }
             catch (ParseError error)
             {
+                Synchronize();
                 return null;
             }
+        }
+
+        private Stmt VarDeclaration()
+        {
+            Token name = Consume(Kind.IDENTIFIER, "Expect variable name.");
+
+            Expr initializer = null;
+            if (Match(Kind.EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(Kind.SEMICOLON, "Expect ';' after variable declaration.");
+            return new Stmt.Var(name, initializer);
+        }
+
+        private Stmt Statement()
+        {
+            if (Match(Kind.PRINT)) return PrintStatement();
+
+            return ExpressionStatement();
+        }
+
+        private Stmt PrintStatement()
+        {
+            Expr value = Expression();
+            Consume(Kind.SEMICOLON, "Expect ';' after value.");
+            return new Stmt.Print(value);
+        }
+
+        private Stmt ExpressionStatement()
+        {
+            Expr expr = Expression();
+            Consume(Kind.SEMICOLON, "Expect ';' after expression.");
+            return new Stmt.Expression(expr);
         }
 
         private Expr Expression()
@@ -155,7 +216,12 @@ namespace LoxLanguage.Lox.Parser
             {
                 return new Expr.Literal(Previous()._literal);
             }
-            
+
+            if (Match(Kind.IDENTIFIER))
+            {
+                return new Expr.Variable(Previous());
+            }
+
             if (Match(Kind.LEFT_PARENTH))
             {
                 Expr expr = Expression();

@@ -12,6 +12,7 @@ namespace LoxLanguage.Lox.Core
             internal T VisitGroupingExpr(Grouping expr);
             internal T VisitLiteralExpr(Literal expr);
             internal T VisitUnaryExpr(Unary expr);
+            internal T VisitVariableExpr(Variable expr);
         }
         internal class Binary : Expr
         {
@@ -74,6 +75,20 @@ namespace LoxLanguage.Lox.Core
 
             internal Token loxOperator;
             internal Expr right;
+        }
+        internal class Variable : Expr
+        {
+            public Variable(Token name)
+            {
+                this.name = name;
+            }
+
+            internal override T Accept<T>(Visitor<T> visitor)
+            {
+                return visitor.VisitVariableExpr(this);
+            }
+
+            internal Token name;
         }
     }
 }

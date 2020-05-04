@@ -48,5 +48,10 @@ namespace LoxLanguage.Lox.Scanner
 
             return builder.ToString();
         }
+
+        string Visitor<string>.VisitVariableExpr(Variable expr)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
