@@ -73,9 +73,26 @@ namespace LoxLanguage.Lox.Parser
 
         private Stmt Statement()
         {
+            if (Match(Kind.IF)) return IfStatement();
             if (Match(Kind.PRINT)) return PrintStatement();
-
+            if (Match(Kind.LEFT_BRACE)) return new Stmt.Block(Block());
             return ExpressionStatement();
+        }
+
+        private Stmt IfStatement()
+        {
+            Consume(Kind.LEFT_PARENTH, "Expect '(' after 'if'.");
+            Expr condition = Expression();
+            Consume(Kind.RIGHT_PARENTH, "Expect ')' after if condition.");
+
+            Stmt thenBranch = Statement();
+            Stmt elseBranch = null;
+            if (Match(Kind.ELSE))
+            {
+                elseBranch = Statement();
+            }
+
+            return new Stmt.If(condition, thenBranch, elseBranch);
         }
 
         private Stmt PrintStatement()
@@ -92,9 +109,42 @@ namespace LoxLanguage.Lox.Parser
             return new Stmt.Expression(expr);
         }
 
+        private List<Stmt> Block()
+        {
+            List<Stmt> statements = new List<Stmt>();
+
+            while (!Check(Kind.RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(Kind.RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
+        }
+
         private Expr Expression()
         {
-            return Equality();
+            return Assignment();
+        }
+
+        private Expr Assignment()
+        {
+            Expr expr = Equality();
+
+            if (Match(Kind.EQUAL))
+            {
+                Token equals = Previous();
+                Expr value = Assignment();
+
+                if (expr is Expr.Variable) {
+                    Token name = ((Expr.Variable)expr).name;
+                    return new Expr.Assign(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
         }
 
         private Expr Equality()

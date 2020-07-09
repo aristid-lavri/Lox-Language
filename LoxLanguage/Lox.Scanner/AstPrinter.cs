@@ -53,5 +53,10 @@ namespace LoxLanguage.Lox.Scanner
         {
             throw new NotImplementedException();
         }
+
+        string Visitor<string>.VisitAssignExpr(Assign expr)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

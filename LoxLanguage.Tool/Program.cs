@@ -10,17 +10,20 @@ namespace LoxLanguage.Tool
         static void Main(string[] args)
         {
             DefineAst(_path, "Expr", new List<string> {
-              "Binary   : Expr left, Token loxOperator, Expr right",
-              "Grouping : Expr expression",
-              "Literal  : Object value",
-              "Unary    : Token loxOperator, Expr right",
-              "Variable : Token name"
+                "Assign   : Token name, Expr value",
+                "Binary   : Expr left, Token loxOperator, Expr right",
+                "Grouping : Expr expression",
+                "Literal  : Object value",
+                "Unary    : Token loxOperator, Expr right",
+                "Variable : Token name"
             });
 
             DefineAst(_path, "Stmt", new List<string> {
-              "Expression : Expr expression",
-              "Print      : Expr expression",
-              "Var        : Token name, Expr initializer"
+                "Block      : List<Stmt> statements",
+                "Expression : Expr expression",
+                "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
+                "Print      : Expr expression",
+                "Var        : Token name, Expr initializer"
             });
         }
 

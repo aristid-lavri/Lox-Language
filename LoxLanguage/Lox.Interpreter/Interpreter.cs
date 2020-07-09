@@ -1,14 +1,15 @@
 ﻿using LoxLanguage.Lox.Core;
+using LoxLanguage.Lox.Environment;
 using LoxLanguage.Lox.Seciruty;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using static LoxLanguage.Lox.Core.TokenKind;
 
 namespace LoxLanguage.Lox.Interpreter
 {
     class Interpreter : Expr.Visitor<Object>, Stmt.Visitor<object>
     {
+        private Environment.Environment environment = new Environment.Environment();
         object Expr.Visitor<object>.VisitBinaryExpr(Expr.Binary expr)
         {
             Object left = Evaluate(expr.left);
@@ -172,12 +173,64 @@ namespace LoxLanguage.Lox.Interpreter
 
         object Stmt.Visitor<object>.VisitVarStmt(Stmt.Var stmt)
         {
-            throw new NotImplementedException();
+            Object value = null;
+            if (stmt.initializer != null)
+            {
+                value = Evaluate(stmt.initializer);
+            }
+
+            environment.Define(stmt.name._lexeme, value);
+            return null;
         }
 
         object Expr.Visitor<object>.VisitVariableExpr(Expr.Variable expr)
         {
-            throw new NotImplementedException();
+            return environment.Get(expr.name);
+        }
+
+        object Expr.Visitor<object>.VisitAssignExpr(Expr.Assign expr)
+        {
+            Object value = Evaluate(expr.value);
+
+            environment.Assign(expr.name, value);
+            return value;
+        }
+
+        object Stmt.Visitor<object>.VisitBlockStmt(Stmt.Block stmt)
+        {
+            ExecuteBlock(stmt.statements, new Environment.Environment(environment));
+            return null;
+        }
+
+        void ExecuteBlock(List<Stmt> statements, Environment.Environment environment)
+        {
+            Environment.Environment previous = this.environment;
+            try
+            {
+                this.environment = environment;
+
+                foreach (Stmt statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                this.environment = previous;
+            }
+        }
+
+        object Stmt.Visitor<object>.VisitIfStmt(Stmt.If stmt)
+        {
+            if (IsTruthy(Evaluate(stmt.condition)))
+            {
+                Execute(stmt.thenBranch);
+            }
+            else if (stmt.elseBranch != null)
+            {
+                Execute(stmt.elseBranch);
+            }
+            return null;
         }
     }
 }

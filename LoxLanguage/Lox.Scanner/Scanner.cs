@@ -107,7 +107,7 @@ namespace LoxLanguage.Lox.Scanner
             string text = _source.Substring(_start, (((_current -1) - _start) + 1));
 
             var IsKeyExist = Reserved.Keywords.TryGetValue(text, out TokenKind.Kind kind);
-            if (!IsKeyExist) kind = kind = Kind.IDENTIFIER;
+            if (!IsKeyExist) kind = Kind.IDENTIFIER;
             AddToken(kind);
         }
 
@@ -188,12 +188,12 @@ namespace LoxLanguage.Lox.Scanner
             return true;
         }
 
-        private void AddToken(Kind kind)
-        {
-            AddToken(kind, null);
-        }
+        //private void AddToken(Kind kind)
+        //{
+        //    AddToken(kind, null);
+        //}
 
-        private void AddToken(Kind kind, object literal)
+        private void AddToken(Kind kind, object literal = null)
         {
             String text = _source.Substring(_start, (((_current - 1) - _start) + 1));
             _tokens.Add(new Token(kind, text, literal, _line));
